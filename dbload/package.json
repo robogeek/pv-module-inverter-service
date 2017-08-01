@@ -1,0 +1,32 @@
+{
+  "name": "pv-module-dbloader",
+  "version": "1.0.0",
+  "description": "Load the PV/Module database",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/robogeek/csv2db.git"
+  },
+  "keywords": [
+    "CSV"
+  ],
+  "author": "David Herron <david@davidherron.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/robogeek/csv2db/issues"
+  },
+  "scripts": {
+      "inverters": "node csv2mysql.js 127.0.0.1 root pa55w0rd modules inverters inverters.sql '/Users/david/Google Drive/GridPower/goSolarCalifornia/Inverter_List_Full_Data.csv' ",
+      "modules": "node csv2mysql.js 127.0.0.1 root pa55w0rd modules modules modules.sql '/Users/david/Google Drive/GridPower/goSolarCalifornia/PV_Module_List_Full_Data.csv' "
+  },
+  "homepage": "https://gitlab.com/robogeek/csv2db#README",
+  "dependencies": {
+    "async": "^2.0.1",
+    "csv-headers": "^1.0.0",
+    "csv-parse": "^1.1.7",
+    "csv-stringify": "^1.0.4",
+    "mysql": "^2.11.1",
+    "sqlite3": "^3.1.4",
+    "leftpad": "*",
+    "co": "*"
+  }
+}

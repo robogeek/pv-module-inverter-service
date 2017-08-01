@@ -1,0 +1,463 @@
+swagger: '2.0'
+info:
+    description: |
+        Supply solar PV module and inverter data from GoSolarCalifornia database
+    version: "0.1.0"
+    title: "Solar Module and Solar Inverter REST"
+    contact:
+        email: "david@davidherron.com"
+schemes:
+    - "http"
+# basePath: /v0.1
+
+paths:
+    /modules:
+        get:
+            description: Query the local PV Modules database
+            operationId: getModules
+            parameters:
+                - name: manufacturer
+                  in: query
+                  type: string
+                  required: false
+                  description: Match manufacturer name
+                - name: model
+                  in: query
+                  type: string
+                  required: false
+                  description: Match manufacturer-assigned model number
+                - name: minPmax
+                  in: query
+                  type: number
+                  format: float
+                  required: false
+                  description: Minimum of allowable Pmax range
+                - name: maxPmax
+                  in: query
+                  type: number
+                  format: float
+                  required: false
+                  description: Maximum of allowable Pmax range
+                - name: minVpmax
+                  in: query
+                  type: number
+                  format: float
+                  required: false
+                  description: Minimum of allowable Vpmax range
+                - name: maxVpmax
+                  in: query
+                  type: number
+                  format: float
+                  required: false
+                  description: Maximum of allowable Vpmax range
+                - name: minVoc
+                  in: query
+                  type: number
+                  format: float
+                  required: false
+                  description: Minimum of allowable Voc range
+                - name: maxVoc
+                  in: query
+                  type: number
+                  format: float
+                  required: false
+                  description: Maximum of allowable Voc range
+                - name: minIsc
+                  in: query
+                  type: number
+                  format: float
+                  required: false
+                  description: Minimum of allowable Isx range
+                - name: maxIsc
+                  in: query
+                  type: number
+                  format: float
+                  required: false
+                  description: Maximum of allowable Isc range
+                # - in: query
+                #  name: type
+                #  type: string
+                #  enum:
+                #      - flatplate
+                #  required: false
+                #  description: Matches against the panel type
+                - in: query
+                  name: family
+                  type: string
+                  enum:
+                      - monocrystalline
+                      - polycrystalline
+                      - thinfilm
+                      - cigsthin
+                      - hitsithin
+                  required: false
+                  description: Matches against the panel family
+                - in: query
+                  name: technology
+                  type: string
+                  enum:
+                    - monocsi
+                    - multicsi
+                    - thinfilm
+                  required: false
+                  description: Matches against the panel technology
+            responses:
+                200:
+                    description: OK
+                    schema:
+                        type: array
+                        items:
+                            $ref: "#/definitions/Module"
+                404:
+                    description: NOT FOUND
+    /inverters:
+        get:
+            description: Query the local PV Inverters database
+            operationId: getInverters
+            parameters:
+                - in: query
+                  name: manufacturer
+                  type: string
+                  required: false
+                  description: Match manufacturer name
+                - in: query
+                  name: model
+                  type: string
+                  required: false
+                  description: Match manufacturer-assigned model number
+                - in: query
+                  name: minpower
+                  type: number
+                  format: float
+                  required: false
+                  description: Minimum power continuous rating
+                - in: query
+                  name: maxpower
+                  type: number
+                  format: float
+                  required: false
+                  description: Maximum power continuous rating
+                - in: query
+                  name: minvoltage
+                  type: number
+                  format: float
+                  required: false
+                  description: Minimum nominal voltage
+                - in: query
+                  name: maxvoltage
+                  type: number
+                  format: float
+                  required: false
+                  description: Maximum nominal voltage
+                - in: query
+                  name: hasmeter
+                  type: string
+                  enum:
+                      - yes
+                      - no
+                  description: Has a built-in meter
+                - in: query
+                  name: microinverter
+                  type: string
+                  enum:
+                      - yes
+                      - no
+                  description: Is a microinverter system
+            responses:
+                200:
+                    description: OK
+                    schema:
+                        type: array
+                        items:
+                            $ref: "#/definitions/Inverter"
+                404:
+                    description: NOT FOUND
+
+definitions:
+    Module:
+        type: object
+        properties:
+            manufacturer:
+                type: string
+                description: Manufacturer name
+            model:
+                type: string
+                description: Manufacturer-assigned model number
+            description:
+                type: string
+                description: Manufacturer's description
+            BIPV:
+                type: string
+                description: Building Integrated PV
+            nameplatePmax:
+                type: integer
+                description: Pmax
+            PTC:
+                type: number
+                format: float
+                description: |
+                    PVUSA Test Conditions, which were developed to test and compare PV systems as part of the PVUSA (Photovoltaics for Utility Scale Applications) project. PTC are 1,000 Watts per square meter solar irradiance, 20 degrees C air temperature, and wind speed of 1 meter per second at 10 meters above ground level. PV manufacturers use Standard Test Conditions, or STC, to rate their PV products. STC are 1,000 Watts per square meter solar irradiance, 25 degrees C cell temperature, air mass equal to 1.5, and ASTM G173-03 standard spectrum. The PTC rating, which is lower than the STC rating, is generally recognized as a more realistic measure of PV output because the test conditions better reflect "real-world" solar and climatic conditions, compared to the STC rating. All ratings in the list are DC (direct current) watts.
+            notes:
+                type: string
+                description: Manufacturer's notes
+            nameplateVpmax:
+                type: number
+                format: float
+                description: Voltage at Maximum Power
+            nameplateIpmax:
+                type: number
+                format: float
+                description: Current at Maximum Power (Ip max)
+            nameplateVoc:
+                type: number
+                format: float
+                description: Open Circuit Voltage (Voc)
+            nameplateIsc:
+                type: number
+                format: float
+                description: Short Circuit Current (Isc)
+            averageNOCT:
+                type: number
+                format: float
+                description: "Nominal Operating Cell Temperature. The temperature reached by open circuited cells in a PV module under the following conditions: 800 watts per square meter irradiance on cell surface, 20 degrees Celsius air temperature, 1 meter per second wind velocity, and open back side mounting"
+            betaVoc:
+                type: number
+                format: float
+                description: Temperature Coefficient of Open Circuit Voltage, percent per degrees Celsius (β Voc)
+            betaVpmax:
+                type: number
+                format: float
+                description: Temperature Coefficient of Voltage at Maximum Power, percent per degrees Celsius (β Vp max)
+            alphaIsc:
+                type: number
+                format: float
+                description: Temperature Coefficient of Short Circuit Current, percent per degrees Celsius (α Isc)
+            alphaIpmax:
+                type: number
+                format: float
+                description: Temperature Coefficient of Current at Maximum Power, percent per degrees Celsius (α Ip max)
+            gammaPmax:
+                type: number
+                format: float
+                description: Temperature Coefficient of Maximum Power, percent per degrees Celsius (γ Pmax)
+            VPmaxlow:
+                type: number
+                format: float
+                description: Voltage at Maximum Power and Low Irradiance (V Pmax, low)
+            IPmaxlow:
+                type: number
+                format: float
+                description: Current at Maximum Power and Low Irradiance (I Pmax, low)
+            VPmaxNOCT:
+                type: number
+                format: float
+                description: Voltage at Maximum Power and NOCT. (V Pmax, NOCT)
+            IPmaxNOCT:
+                type: number
+                format: float
+                description: Current at Maximum Power and NOCT (I Pmax, NOCT)
+            sizeShortSide:
+                type: number
+                format: float
+                description: Size on short side, in Meters
+            sizeLongSide:
+                type: number
+                format: float
+                description: Size on long side, in Meters
+            geometricMultiplier:
+                type: number
+                format: float
+                description: Geometric Multiplier
+            ApertureArea:
+                type: number
+                format: float
+                description: Aperture Area (A_c)
+            NumberCellsSeries:
+                type: number
+                format: float
+                description: Number cells in series
+            NumberCellsParallel:
+                type: number
+                format: float
+                description: Number of cells in parallel
+            type:
+                type: string
+                description: Module type
+            technology:
+                type: string
+                description: The sort of panel
+            mounting:
+                type: string
+                description: How the module is mounted
+            lastUpdate:
+                type: string
+                description: Last update
+            cecListingDate:
+                type: string
+                description: Listing date with California Energy Commission
+    Inverter:
+        type: object
+        properties:
+            manufacturer:
+                type: string
+                description: Manufacturer name
+            model:
+                type: string
+                description: Manufacturer-assigned model number
+            description:
+                type: string
+                description: Manufacturer's description
+            powerRating:
+                type: number
+                format: float
+                description: Power Rating, Continuous at Unity Power Factor (kW)
+            voltageNominalAC:
+                type: number
+                format: float
+                description: Nominal Voltage (Vac)
+            efficiency:
+                type: number
+                format: float
+                description: Weighted Efficiency (%)
+            UL1741SA:
+                type: string
+                description: "UL 1741 Supplement A Certification*** (Certification Date)"
+            firmwareVersionTested:
+                type: string
+                description: Firmware Version Tested
+            builtInMeter:
+                type: string
+                description: Built-In Meter
+            microInverter:
+                type: string
+                description: Microinverter
+            notes:
+                type: string
+                description: Manufacturer's notes
+            nightTareLoss:
+                type: string
+                description: "Night Tare Loss (W)"
+            powerRatingContinuous:
+                type: number
+                format: float
+                description: "Power Rating, Continuous, 40 deg C (kW)"
+            nightTareLoss40C:
+                type: string
+                description: "Night Tare Loss 40 deg C (W)"
+            voltageMinDC:
+                type: number
+                format: float
+                description: Voltage Minimum (Vdc)
+            voltageNominalDC:
+                type: number
+                format: float
+                description: Voltage Nominal (Vdc)
+            voltageMaxDC:
+                type: number
+                format: float
+                description: Voltage Maximum (Vdc)
+            powerLevel10:
+                type: number
+                format: float
+                description: Power Level 10% (kW)
+            powerLevel20:
+                type: number
+                format: float
+                description: Power Level 20% (kW)
+            powerLevel30:
+                type: number
+                format: float
+                description: Power Level 30% (kW)
+            powerLevel50:
+                type: number
+                format: float
+                description: Power Level 50% (kW)
+            powerLevel75:
+                type: number
+                format: float
+                description: Power Level 75% (kW)
+            powerLevel100:
+                type: number
+                format: float
+                description: Power Level 100% (kW)
+            efficiencyVmin10:
+                type: number
+                format: float
+                description: Efficiency @Vmin, 10% (%)
+            efficiencyVmin20:
+                type: number
+                format: float
+                description: Efficiency @Vmin, 20% (%)
+            efficiencyVmin30:
+                type: number
+                format: float
+                description: Efficiency @Vmin, 30% (%)
+            efficiencyVmin50:
+                type: number
+                format: float
+                description: Efficiency @Vmin, 50% (%)
+            efficiencyVmin75:
+                type: number
+                format: float
+                description: Efficiency @Vmin, 75% (%)
+            efficiencyVmin100:
+                type: number
+                format: float
+                description: Efficiency @Vmin, 100% (%)
+            efficiencyVnom10:
+                type: number
+                format: float
+                description: Efficiency @Vnom, 10% (%)
+            efficiencyVnom20:
+                type: number
+                format: float
+                description: Efficiency @Vnom, 20% (%)
+            efficiencyVnom30:
+                type: number
+                format: float
+                description: Efficiency @Vnom, 30% (%)
+            efficiencyVnom50:
+                type: number
+                format: float
+                description: Efficiency @Vnom, 50% (%)
+            efficiencyVnom75:
+                type: number
+                format: float
+                description: Efficiency @Vnom, 75% (%)
+            efficiencyVnom100:
+                type: number
+                format: float
+                description: Efficiency @Vnom, 100% (%)
+            efficiencyVmax10:
+                type: number
+                format: float
+                description: Efficiency @Vmax, 10% (%)
+            efficiencyVmax20:
+                type: number
+                format: float
+                description: Efficiency @Vmax, 20% (%)
+            efficiencyVmax30:
+                type: number
+                format: float
+                description: Efficiency @Vmax, 30% (%)
+            efficiencyVmax50:
+                type: number
+                format: float
+                description: Efficiency @Vmax, 50% (%)
+            efficiencyVmax75:
+                type: number
+                format: float
+                description: Efficiency @Vmax, 75% (%)
+            efficiencyVmax100:
+                type: number
+                format: float
+                description: Efficiency @Vmax, 100% (%)
+            sortOrder:
+                type: string
+                description: Sort order
+            cecListingDate:
+                type: string
+                description: Listing date with California Energy Commission
+            lastUpdate:
+                type: string
+                description: Last update
